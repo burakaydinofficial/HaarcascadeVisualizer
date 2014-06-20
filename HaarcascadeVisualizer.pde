@@ -41,15 +41,14 @@ boolean openFiles = false;
 // END Editable Parameters
 // ------------------------------------------------------------------------
 
-import processing.xml.*;
+//import processing.xml.*;
 import java.awt.Rectangle;
-import interfascia.*;
-
+//import interfascia.*;
+import controlP5.*;
+ControlP5 cp5;
 // Interface elements
-IFTextField t;
-GUIController c;
-IFButton bFirst, bAll;
-IFCheckBox cb;
+
+
 PFont font1, font2;
 
 // Logic
@@ -59,7 +58,7 @@ String statusMsg = "";
 int idCur;
 
 // GUI
-ArrayList<Button> buttons;
+
 int marginL = 40;
 int marginT = 60;
 
@@ -80,11 +79,26 @@ int waitCountMax = 3;
 String path; // sketch path
 
 void setup() {
-  size(500, 800);
+  size(500, 800,P2D);
+  PFont font = createFont("arial", 20);  
+  cp5 = new ControlP5(this);
 
   println("[main] using cascade: " + cascadeFile);
+ 
 
-  Button button;
+  cp5.addButton("bFirst")
+      .setPosition(marginL, marginT+50)
+        .setSize(150, 19).setCaptionLabel("RENDER FIRST")
+          ;
+
+  cp5.addButton("bAll")
+      .setPosition(marginL+220, marginT+50)
+        .setSize(200, 19).setCaptionLabel("RENDER ALL STAGES")
+          ;
+
+
+
+
 
   path = sketchPath; // an environment variable
 
@@ -96,16 +110,9 @@ void setup() {
 
   smooth();
 
-  c = new GUIController (this);
+
   // (text, x, y, width, height)
-  bFirst = new IFButton ("RENDER FIRST", marginL, marginT + 50, 100, 16);
 
-  bAll = new IFButton ("RENDER ALL STAGES", marginL + 100, marginT + 50, 140, 16);
-
-  bFirst.addActionListener(this);
-  bAll.addActionListener(this);
-  c.add(bFirst);
-  c.add(bAll);
 
   font1 = createFont("Helvetica-Bold", 30);
   font2 = createFont("Helvetica", 11);
@@ -161,11 +168,11 @@ void checkForProcess() {
     textAlpha = 255;
     String name = cascadeFile;
     String path = sketchPath +"/";
-    File f = new File(dataPath(path+cascadeFile));
+    File f = new File(dataPath(cascadeFile));
     if (f.exists() && name.length() > 0)
     {
       hasErrors = false;
-      statusMsg = "Rendering all stages. This could take several minutes.";
+      statusMsg = "Rendering. This could take several minutes.";
     } 
     else {
       hasErrors = true;
@@ -175,24 +182,20 @@ void checkForProcess() {
   }
 }
 
-void actionPerformed (GUIEvent e) {
-
-  if (e.getSource() == bAll)
-  {
-    drawMode = 1;
+public void  bAll(){
+  drawMode = 1;
     doProcess = true;
-  }
-  else if (e.getSource() == bFirst)
-  {
+}
+public void  bFirst(){
+  drawMode = 0;
     doProcess = true;
-  }
 }
 
 void doProcessing() {
   String name = cascadeFile;
   String path = sketchPath +"/";
-  println(path+name);
-  stages = doLoadXML(path+name);
+  println(name);
+  stages = doLoadXML(name);
   String[] pieces = split(name, '.');
   name = pieces[0];
 
@@ -262,24 +265,24 @@ void renderStages(String name) {
   minSize = sampleSize[0];
   stageScale = (float)imgSize/(float)minSize;
   int renderWidth = 1024;
-
+  println("stages: " + stages.size() );
   for (int i=0;i<stages.size();i++) {
     Stage stage = (Stage) stages.get(i);
     int renderCols = ceil(renderWidth/(imgSize+margin));
     renderWidth = renderCols*(imgSize+margin)+(margin);
     int renderHeight = (ceil(stage.getNumItems()/(float)renderCols)*(imgSize+margin))+(margin);
-    PGraphics container = createGraphics(renderWidth, renderHeight, JAVA2D);
+ 
+    PGraphics container = createGraphics(renderWidth, renderHeight, P2D);
     container.beginDraw();
     container.background(imgBgColor);
     container.endDraw();
-
+    //println("trees in this stage" + stage.getNumItems() );
     // Render stage
-    for (int j=0;j<stage.getNumItems();j++) {//get all trees in this stage
+    for (int j=0;j<stage.getNumItems();j++) {//get all trees in this stage      
       Tree tree = stage.getTree(j);
-      //println("[main] Processing tree # " + j + " in stage " + (i+1);
+     // println("[main] Processing tree # " + j + " in stage " + (i+1));
       statusMsg = "[main] Processing tree # " + j + " in stage " + (i+1);
       redraw();
-
       PGraphics featuresImg = tree.render(imgSize, stageScale, 1);
       int ypos = floor((imgSize+margin)*(ceil(j/renderCols)))+margin;
       int xpos = (imgSize+margin)*(j%renderCols)+margin;
@@ -289,107 +292,26 @@ void renderStages(String name) {
       container.image(img, 0, 0);
       container.filter(GRAY);
       container.image(featuresImg, 0, 0);
+      container.endDraw();
       container.popMatrix();
+      featuresImg.clear();
+      featuresImg=null;
+
+
+     // delay(500);
     }
 
     println("[main] Rendered stage " + (i+1));
 
     String filename =  name+"/stage_"+i+".tif";
     container.save(filename);
+    
+    container.clear();
     println("[main] Saved filename: " + filename );
+    container=null;
+    System.gc();
   }
 
   // Open folder
   open(sketchPath + "/" + name + "/.");
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
