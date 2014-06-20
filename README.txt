@@ -1,3 +1,11 @@
+This fork is just a Processing 2 adaptation of Adam Harvey's code. Almost the only change is the xml parser. I've replaced the problematic xml calls for new ones. Also I'm using controlP5 as as a GUI instead of interfascia. So you need to add controlP5 as a library.
+
+You might need to increase Processing heap space to render all the stages of the algorithm. With 1.2 GB (WTF! ) runs for me. 
+
+Thanks to Adam for his great and inspirational work.
+
+------------------ Adam original README.txt: --------
+
 This is a test for CV Dazzle's future github push.
 
 Here's a visualizer I made that allows you to render the haarfeatures from the cascade files.
