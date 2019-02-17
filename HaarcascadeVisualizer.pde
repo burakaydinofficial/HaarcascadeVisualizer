@@ -23,7 +23,7 @@
 // START Editable Parameters
 // Cascade file
 String cascadeFile = "haarcascade_frontalface_default.xml";
-
+String referenceImagePath = "face.jpg";
 
 // Choose amount of white space around the image
 int margin = 0;
@@ -103,7 +103,7 @@ void setup() {
   path = sketchPath; // an environment variable
 
   // Replace with your face or use Lena
-  img = loadImage("face.jpg");
+  img = loadImage(referenceImagePath);
   imgSize = img.width;
   rows = height/imgSize;
   cols = width/imgSize;
