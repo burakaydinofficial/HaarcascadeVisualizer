@@ -303,7 +303,7 @@ void renderStages(String name) {
 
     println("[main] Rendered stage " + (i+1));
 
-    String filename =  name+"/stage_"+i+".tif";
+    String filename =  "renders/"+name+"/stage_"+i+".tif";
     container.save(filename);
     
     container.clear();
